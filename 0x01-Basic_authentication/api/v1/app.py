@@ -29,17 +29,17 @@ def before_request():
     if auth is None:
         # If auth is None, do nothing
         return
-    
-    # Check if the path requires authentication
-    if not any(request.path.startswith(path) for path in public_paths):
-        if auth.require_auth(request.path, public_paths):
-            # Check if the Authorization header is present
-            if auth.authorization_header(request) is None:
-                abort(401)  # Unauthorized
-            
-            # Check if the current user is present
-            if auth.current_user(request) is None:
-                abort(403)  # Forbidden
+
+    if not auth.require_auth(request.path, excluded_paths):
+        return
+
+    if not auth.authorization_header(request):
+        abort(401)
+
+    if not auth.current_user(request):
+        abort(403)
+
+
 
 @app.errorhandler(404)
 def not_found(error) -> str:
@@ -52,8 +52,8 @@ def unauthorized(error) -> str:
     """
     return jsonify({"error" : "Unauthorized"}), 401
 @app.errorhandler(403)
-def forbidden(error) -> str:
-    """ Forbidden
+def forbidden_error(error) -> str:
+    """ Forbidden error
     """
     return jsonify({"error" : "Forbidden"}), 403
 
