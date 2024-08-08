@@ -1,4 +1,4 @@
-i#!/usr/bin/env python3
+#!/usr/bin/env python3
 """ Module of Users views
 """
 from api.v1.views import app_views
