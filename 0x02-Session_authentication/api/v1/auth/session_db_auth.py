@@ -1,4 +1,4 @@
-i#!/usr/bin/env python3
+#!/usr/bin/env python3
 """"saving the session id and user id to a database like a file"""
 from api.v1.auth.session_exp_auth import SessionExpAuth
 from datetime import datetime, timedelta
