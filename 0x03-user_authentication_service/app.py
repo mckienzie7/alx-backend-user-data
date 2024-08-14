@@ -83,17 +83,16 @@ def reset_password():
     """
         Reset Password based on email
     """
-    user = None
+    reset_token = None
     email = request.form.get('email')
-    if not email:
-        return jsonify({"message": "email is required"}), 400
 
-    user = AUTH._db.find_user_by(email=email)
-    if user is None:
+    try:
+        reset_token = AUTH.get_reset_password_token(email)
+    except ValueError:
+        reset_token = None
+    if reset_token is None:
         abort(403)
-
-    reset_token = AUTH.get_reset_password_token(email)
-    return jsonify({"email": user.email, "reset_token": reset_token})
+    return jsonify({"email": email, "reset_token": reset_token})
 
 
 @app.errorhandler(404)
