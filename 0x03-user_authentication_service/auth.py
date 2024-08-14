@@ -59,26 +59,28 @@ class Auth:
         """
             - Create Session id based on email
         """
+        user = None
         try:
-            user1 = self._db.find_user_by(email=email)
-            if user1:
-                session_id = _generate_uuid()
-                user1.session_id = session_id
-                self._db._session.add(user1)
-                self._db._session.commit()
-                return session_id
+            user = self._db.find_user_by(email=email)
         except NoResultFound:
             return None
+        if user is None:
+            return None
+        session_id = _generate_uuid()
+        self._db.update_user(user.id, session_id=session_id)
+        return session_id
 
     def get_user_from_session_id(session_id: str) -> User:
         """
             Get the user from corresponding session id
         """
+        user = None
         if session_id is None:
-            return
-        user = AUTH._bd.find_user_by(session_id=session_id)
-        if not user:
-            return
+            return None
+        try:
+            user = AUTH._bd.find_user_by(session_id=session_id)
+        except NoREsultFound:
+            return None
 
         return user
 
@@ -89,9 +91,4 @@ class Auth:
         if user_id is None:
             return
 
-        user = AUTH._bd.find_user_by(session_id=session_id)
-        if not user:
-            return
-
-        user.session_id = None
-        return None
+        user = AUTH._bd.update_user(user_id, session_id=None)
