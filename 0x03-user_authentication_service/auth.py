@@ -101,7 +101,7 @@ class Auth:
         try:
             user = self._db.find_user_by(email=email)
         except NoResultFound:
-            user =  None
+            user = None
         if user is None:
             raise ValueError("User not found")
 
