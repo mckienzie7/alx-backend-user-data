@@ -97,12 +97,14 @@ class Auth:
         """
             Reset Password
         """
+        user = None
         try:
             user = self._db.find_user_by(email=email)
-            if user is None:
-                raise ValueError
         except NoResultFound:
-            return None
+            user =  None
+        if user is None:
+            raise ValueError("User not found")
+
         rt_id = _generate_uuid()
         self._db.update_user(user.id, reset_token=rt_id)
         return rt_id
